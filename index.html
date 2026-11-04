@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizzadeig</title>
+<meta name="theme-color" content="#f2f1ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151613" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pizzadeig">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1 class="brand">Pizzadeig</h1>
+    <label class="style-picker">
+      <span class="sr-only">Pizzastil</span>
+      <select id="style"></select>
+    </label>
+  </div>
+</header>
+
+<main>
+  <!-- DEIG -->
+  <section class="view" id="view-deig" data-view="deig">
+    <div class="grid">
+      <div class="inputs">
+        <div class="card">
+          <h2 class="card-title">Mengde</h2>
+          <div class="seg" role="radiogroup" aria-label="Velg mengde" id="qtyMode">
+            <button type="button" data-value="balls">Antall pizzaer</button>
+            <button type="button" data-value="grams">Total deig</button>
+          </div>
+          <div class="row" id="row-balls">
+            <span class="row-label">Pizzaer</span>
+            <div class="stepper" data-field="balls" data-min="1" data-max="40" data-step="1">
+              <button type="button" data-dir="-1" aria-label="Færre">−</button>
+              <output id="out-balls"></output>
+              <button type="button" data-dir="1" aria-label="Flere">+</button>
+            </div>
+          </div>
+          <div class="row" id="row-grams" hidden>
+            <span class="row-label">Total deig</span>
+            <div class="stepper" data-field="totalGrams" data-min="200" data-max="10000" data-step="50">
+              <button type="button" data-dir="-1" aria-label="Mindre">−</button>
+              <output id="out-totalGrams"></output>
+              <button type="button" data-dir="1" aria-label="Mer">+</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Per pizza</span>
+            <div class="stepper" data-field="ballWeight" data-min="180" data-max="320" data-step="5">
+              <button type="button" data-dir="-1" aria-label="Lettere">−</button>
+              <output id="out-ballWeight"></output>
+              <button type="button" data-dir="1" aria-label="Tyngre">+</button>
+            </div>
+          </div>
+          <p class="hint" id="qty-hint"></p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Hevetid</h2>
+          <div class="big-value"><output id="out-hours"></output></div>
+          <input type="range" id="hours" min="3" max="72" step="1" aria-label="Hevetid i timer">
+          <div class="chips" id="hourChips">
+            <button type="button" data-h="3">3 t</button>
+            <button type="button" data-h="8">8 t</button>
+            <button type="button" data-h="12">12 t</button>
+            <button type="button" data-h="24">24 t</button>
+            <button type="button" data-h="48">48 t</button>
+            <button type="button" data-h="72">72 t</button>
+          </div>
+          <div class="seg" role="radiogroup" aria-label="Hevemåte" id="mode">
+            <button type="button" data-value="rt">Kun romtemp.</button>
+            <button type="button" data-value="ct">Romtemp. + kjøleskap</button>
+          </div>
+          <div id="ctOptions">
+            <div class="row">
+              <span class="row-label">Bulk i romtemp. først</span>
+              <div class="stepper" data-field="rtBefore" data-min="0" data-max="4" data-step="1">
+                <button type="button" data-dir="-1" aria-label="Kortere">−</button>
+                <output id="out-rtBefore"></output>
+                <button type="button" data-dir="1" aria-label="Lengre">+</button>
+              </div>
+            </div>
+            <div class="row">
+              <span class="row-label">Heving i ball</span>
+              <div class="stepper" data-field="ballRt" data-min="6" data-max="12" data-step="1">
+                <button type="button" data-dir="-1" aria-label="Kortere">−</button>
+                <output id="out-ballRt"></output>
+                <button type="button" data-dir="1" aria-label="Lengre">+</button>
+              </div>
+            </div>
+            <label class="row">
+              <span class="row-label">Romtemperer 2 t før balling</span>
+              <select id="temper">
+                <option value="auto">Automatisk</option>
+                <option value="on">Ja</option>
+                <option value="off">Nei, ball rett fra kjøleskap</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint" id="mode-hint"></p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Hydrering</h2>
+          <div class="big-value"><output id="out-hydration"></output></div>
+          <input type="range" id="hydration" min="58" max="75" step="1" aria-label="Hydrering i prosent">
+          <div class="scale"><span>58 %</span><span>64 %</span><span>70 %</span><span>75 %</span></div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Mel</h2>
+          <p class="hint">Appen velger mel og blanding selv ut fra hevetid og hydrering.</p>
+          <label class="row switch">
+            <span class="row-label">10 % sammalt emmer eller rug</span>
+            <input type="checkbox" id="wholegrain">
+          </label>
+          <label class="row switch" id="row-criscito">
+            <span class="row-label">Bytt litt av det med Criscito/Naturkraft</span>
+            <input type="checkbox" id="criscito">
+          </label>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Ovn og utstyr</h2>
+          <span class="field-label">Ovnens maks temperatur</span>
+          <div class="seg seg-5" role="radiogroup" aria-label="Ovnstemperatur" id="oven">
+            <button type="button" data-value="250">250°</button>
+            <button type="button" data-value="300">300°</button>
+            <button type="button" data-value="350">350°</button>
+            <button type="button" data-value="400">400°</button>
+            <button type="button" data-value="500">450+</button>
+          </div>
+          <span class="field-label">Steker på</span>
+          <div class="seg" role="radiogroup" aria-label="Stekeunderlag" id="surface">
+            <button type="button" data-value="steel">Stål</button>
+            <button type="button" data-value="stone">Stein</button>
+            <button type="button" data-value="none">Ingen</button>
+          </div>
+          <label class="row">
+            <span class="row-label">Elting</span>
+            <select id="mixer">
+              <option value="hand">For hånd</option>
+              <option value="spiral">Spiralmaskin (Wilfa Probaker o.l.)</option>
+              <option value="kitchen">Kjøkkenmaskin med krok</option>
+            </select>
+          </label>
+          <label class="row switch">
+            <span class="row-label">Tilpass ingrediensene til ovnen</span>
+            <input type="checkbox" id="ovenAdjust">
+          </label>
+        </div>
+      </div>
+
+      <div class="results" id="results" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section class="view" id="view-plan" data-view="plan" hidden>
+    <div class="narrow">
+      <div class="card">
+        <h2 class="card-title">Når skal pizzaen stekes?</h2>
+        <input type="datetime-local" id="bakeAt" class="input-lg">
+        <p class="hint" id="plan-summary"></p>
+      </div>
+      <ol class="timeline" id="timeline"></ol>
+    </div>
+  </section>
+
+  <!-- LOGG -->
+  <section class="view" id="view-logg" data-view="logg" hidden>
+    <div class="narrow">
+      <div class="log-head">
+        <h2 class="section-title">Bakelogg</h2>
+        <button type="button" class="btn primary" id="newLog">Nytt bakeforsøk</button>
+      </div>
+      <div id="logList"></div>
+    </div>
+  </section>
+
+  <!-- INNSTILLINGER -->
+  <section class="view" id="view-innst" data-view="innst" hidden>
+    <div class="narrow">
+      <div class="card">
+        <h2 class="card-title">Kjøkkenet ditt</h2>
+        <div class="row">
+          <span class="row-label">Romtemperatur</span>
+          <div class="stepper" data-setting="roomTemp" data-min="15" data-max="30" data-step="1">
+            <button type="button" data-dir="-1" aria-label="Kaldere">−</button>
+            <output id="out-roomTemp"></output>
+            <button type="button" data-dir="1" aria-label="Varmere">+</button>
+          </div>
+        </div>
+        <div class="row">
+          <span class="row-label">Kjøleskap</span>
+          <div class="stepper" data-setting="fridgeTemp" data-min="2" data-max="8" data-step="1">
+            <button type="button" data-dir="-1" aria-label="Kaldere">−</button>
+            <output id="out-fridgeTemp"></output>
+            <button type="button" data-dir="1" aria-label="Varmere">+</button>
+          </div>
+        </div>
+        <label class="row switch">
+          <span class="row-label">Melet står i kjøleskapet før elting</span>
+          <input type="checkbox" id="chilledFlour">
+        </label>
+        <label class="row switch">
+          <span class="row-label">Legg til 4 % svinnmargin (260 g per 250 g ball)</span>
+          <input type="checkbox" id="lossMargin">
+        </label>
+        <p class="hint">Gjærmengdene er basert på 21 °C rom og 4 °C kjøleskap. Endrer du temperaturene, justerer appen gjæren automatisk.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Sikkerhetskopi av loggen</h2>
+        <p class="hint">Loggen lagres bare på denne enheten. Ta en kopi av og til, særlig før du sletter nettleserdata.</p>
+        <div class="btn-row">
+          <button type="button" class="btn" id="exportBtn">Eksporter</button>
+          <label class="btn">Importer<input type="file" id="importFile" accept="application/json" hidden></label>
+        </div>
+        <p class="hint" id="backupStatus"></p>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Om tallene</h2>
+        <p class="hint">Gjærmengder, melblandinger, vannfordeling og hevetider er regnet ut fra oppskriftene i <em>Pizzamani – Perfekt pizza hjemme</em> av Rene Munthe Eik. Tilpasningene for ovner under 450 °C, eltemetode og temperatur er appens egne tommelfingerregler.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabbar" aria-label="Hovedmeny">
+  <button type="button" data-tab="deig" aria-current="page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.3"/><circle cx="14.5" cy="9" r="1.3"/><circle cx="13" cy="14.5" r="1.3"/></svg>
+    <span>Deig</span>
+  </button>
+  <button type="button" data-tab="plan">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>
+    <span>Plan</span>
+  </button>
+  <button type="button" data-tab="logg">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
+    <span>Logg</span>
+  </button>
+  <button type="button" data-tab="innst">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    <span>Innstillinger</span>
+  </button>
+</nav>
+
+<dialog id="logDialog" class="sheet"></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="js/bundle.js"></script>
+</body>
+</html>
